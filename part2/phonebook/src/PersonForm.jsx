@@ -1,5 +1,47 @@
-const PersonForm = ({addName, newName, newPhone, handleNameChange, handlePhoneChange}) => {
-    return (
+import personService from "./services/persons"
+
+const PersonForm = ({persons, newName, newPhone, setPersons, setNewName, setNewPhone}) => {
+  const addName = (event) => {
+    event.preventDefault()
+
+    const addedPerson = {
+        name: newName,
+        number: newPhone
+    }
+
+    if (persons.map(person => person.name).includes(newName)) {
+        //alert(`${newName} is already added!`)
+        //return
+        if (!window.confirm(`${newName} is already added. Do you want to update their number with ${newPhone}?`)) {
+          return
+        }
+
+        const id = persons.find(currentPerson => currentPerson.name == newName).id
+        personService
+          .update(id, addedPerson)
+          .then(updatedPerson => setPersons(persons.map(currentPerson => currentPerson.id == id ? updatedPerson : currentPerson)))
+    } else {
+        personService
+        .create(addedPerson)
+        .then(createdPerson => {
+          setPersons(persons.concat(createdPerson))
+        })
+    }
+
+    setNewName("")
+    setNewPhone("")
+    
+  }
+
+  const handleNameChange = (event) => {
+    setNewName(event.target.value)
+  }
+
+  const handlePhoneChange = (event) => {
+    setNewPhone(event.target.value)
+  }  
+  
+  return (
         <form onSubmit={addName}>
         <div>
           name: <input value={newName} onChange={handleNameChange}/>

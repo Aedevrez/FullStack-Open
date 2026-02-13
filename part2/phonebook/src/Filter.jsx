@@ -1,4 +1,9 @@
-const Filter = ({ filter, handleFilterChange }) => {
+const Filter = ({ filter, setFilter }) => {
+
+    const handleFilterChange = (event) => {
+        setFilter(event.target.value)  
+    }
+
     return (
         <>
             <h3>Filter</h3>
