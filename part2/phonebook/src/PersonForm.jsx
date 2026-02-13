@@ -1,6 +1,6 @@
 import personService from "./services/persons"
 
-const PersonForm = ({persons, newName, newPhone, setPersons, setNewName, setNewPhone}) => {
+const PersonForm = ({persons, newName, newPhone, message, type, setPersons, setNewName, setNewPhone, setMessage, setType}) => {
   const addName = (event) => {
     event.preventDefault()
 
@@ -19,18 +19,28 @@ const PersonForm = ({persons, newName, newPhone, setPersons, setNewName, setNewP
         const id = persons.find(currentPerson => currentPerson.name == newName).id
         personService
           .update(id, addedPerson)
-          .then(updatedPerson => setPersons(persons.map(currentPerson => currentPerson.id == id ? updatedPerson : currentPerson)))
+          .then(updatedPerson => {
+            setPersons(persons.map(currentPerson => currentPerson.id == id ? updatedPerson : currentPerson))
+            setMessage(`Updated ${newName}`)
+            setType("success")
+          })
+          .catch(error => {
+            setPersons(persons.filter(person => person.name != newName))
+            setMessage(`Information of ${newName} has already been deleted!`)
+            setType("error")
+          })
     } else {
         personService
         .create(addedPerson)
         .then(createdPerson => {
           setPersons(persons.concat(createdPerson))
+          setMessage(`Added ${newName}`)
+          setType("success")
         })
     }
 
     setNewName("")
     setNewPhone("")
-    
   }
 
   const handleNameChange = (event) => {
